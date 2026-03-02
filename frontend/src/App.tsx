@@ -74,6 +74,17 @@ const safeNum = (v: any, fallback = 0): number =>
 const fx = (v: any, d = 2): string => safeNum(v).toFixed(d);
 const loc = (v: any): string => safeNum(v).toLocaleString();
 
+// ─── Graduated token detector ─────────────────────────────────────────────────
+// A token is "graduated" when it moves from pump.fun bonding curve → Raydium.
+// Signs: complete=true, OR realSolReserves=0 + progress=100%, OR mcapSol=0 + progress≥99%
+const isGraduatedToken = (r: LaunchAnalysis): boolean => {
+  if (!r.isPumpToken) return false;
+  const state = r.bondingCurve?.state;
+  if (state?.complete === true) return true;
+  if (r.bondingCurve.progressPercent >= 99 && r.bondingCurve.liquidityDepthSol === 0) return true;
+  return false;
+};
+
 // ─── Global styles ─────────────────────────────────────────────────────────────
 const GlobalStyle = () => {
   useEffect(() => {
@@ -93,6 +104,7 @@ const GlobalStyle = () => {
       @keyframes pulse   { 0%,100% { opacity:0.35; } 50% { opacity:1; } }
       @keyframes shimmer { 0% { background-position:-600px 0; } 100% { background-position:600px 0; } }
       @keyframes fadeIn  { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+      @keyframes gradPulse { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
     `;
     document.head.appendChild(el);
     return () => { document.head.removeChild(el); };
@@ -131,8 +143,8 @@ const Tip = ({ text, children }: { text: string; children: React.ReactNode }) =>
         {v && (
           <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }} transition={{ duration: 0.1 }}
-            style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)',
-              marginBottom: 4, zIndex: 200, pointerEvents: 'none' }}>
+            style={{ position: 'absolute', bottom: '102%', left: '50%', transform: 'translateX(-50%)',
+              marginBottom: 1, zIndex: 200, pointerEvents: 'none' }}>
             <div style={{ background: '#1c1c1c', border: '1px solid #2c2c2c', color: '#999', fontSize: 11,
               padding: '5px 10px', borderRadius: 7, whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.7)' }}>
               {text}
@@ -186,6 +198,42 @@ const LoadingState = () => (
         </div>
       ))}
     </div>
+  </motion.div>
+);
+
+// ─── Graduated Banner ─────────────────────────────────────────────────────────
+// Shown at the top when a token has graduated to Raydium.
+// Explains why MCAP/Liquidity/Sims are 0 — the pump curve is empty.
+const GraduatedBanner = ({ mint }: { mint: string }) => (
+  <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+    style={{ background: 'rgba(77,158,255,0.05)', border: '1px solid rgba(77,158,255,0.25)',
+      borderRadius: 12, padding: '14px 18px', display: 'flex', flexWrap: 'wrap',
+      alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <span style={{ fontSize: 18, animation: 'gradPulse 2s infinite' }}>🎓</span>
+      <div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: C.blue, letterSpacing: '0.08em', marginBottom: 2 }}>
+          TOKEN GRADUATED TO RAYDIUM
+        </div>
+        <div style={{ fontSize: 11, color: '#4a6a8a', lineHeight: 1.5 }}>
+          This token completed its bonding curve and migrated to Raydium AMM.
+          The pump.fun curve is empty — MCAP, liquidity, and buy simulations
+          show <strong style={{ color: '#5a8aaa' }}>0</strong> because all SOL and tokens left this curve.
+          Trade on Raydium instead.
+        </div>
+      </div>
+    </div>
+    <a
+      href={`https://raydium.io/swap/?inputMint=sol&outputMint=${mint}`}
+      target="_blank" rel="noopener noreferrer"
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700,
+        letterSpacing: '0.1em', padding: '8px 14px', borderRadius: 8, color: C.blue,
+        background: 'rgba(77,158,255,0.08)', border: '1px solid rgba(77,158,255,0.25)',
+        whiteSpace: 'nowrap', transition: 'background 0.15s' }}
+      onMouseEnter={e => e.currentTarget.style.background = 'rgba(77,158,255,0.15)'}
+      onMouseLeave={e => e.currentTarget.style.background = 'rgba(77,158,255,0.08)'}>
+      Trade on Raydium →
+    </a>
   </motion.div>
 );
 
@@ -274,6 +322,29 @@ const Btn = ({ onClick, children, primary, disabled, s }: {
 // ─── Divider ───────────────────────────────────────────────────────────────────
 const Divider = () => <div style={{ height: 1, background: C.border2, margin: '0' }} />;
 
+// ─── Graduated sim placeholder ────────────────────────────────────────────────
+// Replaces the buy simulation cards when token is graduated.
+// Simulations are meaningless on an empty curve.
+const GraduatedSimPlaceholder = ({ mint }: { mint: string }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+    padding: '32px 20px', gap: 10, textAlign: 'center' }}>
+    <div style={{ fontSize: 22 }}>🎓</div>
+    <div style={{ fontSize: 11, fontWeight: 700, color: C.blue, letterSpacing: '0.08em' }}>CURVE IS EMPTY</div>
+    <div style={{ fontSize: 11, color: C.dim, lineHeight: 1.6, maxWidth: 240 }}>
+      Token graduated to Raydium. Buy simulations are unavailable — there are no tokens left in the pump.fun curve to purchase.
+    </div>
+    <a href={`https://raydium.io/swap/?inputMint=sol&outputMint=${mint}`}
+      target="_blank" rel="noopener noreferrer"
+      style={{ marginTop: 4, fontSize: 11, color: C.blue, display: 'flex', alignItems: 'center', gap: 4,
+        padding: '6px 14px', borderRadius: 8, background: 'rgba(77,158,255,0.07)',
+        border: '1px solid rgba(77,158,255,0.2)', transition: 'background 0.15s' }}
+      onMouseEnter={e => e.currentTarget.style.background = 'rgba(77,158,255,0.14)'}
+      onMouseLeave={e => e.currentTarget.style.background = 'rgba(77,158,255,0.07)'}>
+      Open on Raydium →
+    </a>
+  </div>
+);
+
 // ─── Main app ──────────────────────────────────────────────────────────────────
 const MAX_RECENT = 5;
 const wrap: CSSProperties = { maxWidth: 1080, margin: '0 auto', padding: '0 20px' };
@@ -299,13 +370,13 @@ const App: React.FC = () => {
     if (!target) return;
     setLoading(true); setError(''); setResult(null);
     try {
-      const res = await fetch('https://pump-terminal.onrender.com/api/launch', {
+      const res = await fetch('http://localhost:3000/api/launch', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tokenMint: target }),
       });
       if (!res.ok) throw new Error(`Backend error (${res.status})`);
       const data: LaunchAnalysis = await res.json();
-      setResult(data); 
+      setResult(data);
       setRecent(prev => {
         const u = [target, ...prev.filter(s => s !== target)].slice(0, MAX_RECENT);
         localStorage.setItem('pump_recent', JSON.stringify(u));
@@ -337,24 +408,28 @@ const App: React.FC = () => {
     return `${Math.floor(s / 3600)}h ago`;
   };
 
-  const sc  = result ? getScoreCfg(result.alphaScore) : getScoreCfg(0);
-  const clk = new Date(now).toLocaleTimeString('en-US', { hour12: false });
+  // ── Derived state ─────────────────────────────────────────────────────────
+  const graduated = result ? isGraduatedToken(result) : false;
+  const sc        = result ? getScoreCfg(result.alphaScore) : getScoreCfg(0);
+  const clk       = new Date(now).toLocaleTimeString('en-US', { hour12: false });
+  // The mint being displayed (from result or current input)
+  const displayMint = mint.trim();
 
   return (
     <div style={{ minHeight: '100vh', background: C.bg, color: C.white, fontFamily: font }}>
       <GlobalStyle />
- <Analytics />
+      <Analytics />
+
       {/* ── HEADER ─────────────────────────────────────────────────────────── */}
       <header style={{ background: C.surface2, borderBottom: `1px solid ${C.border2}`, position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ ...wrap, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        
             <span style={{ fontWeight: 900, fontSize: 14, letterSpacing: '-0.01em' }}>
               pump<span style={{ color: C.green }}>terminal</span>
             </span>
             <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 5,
               background: C.surface3, border: `1px solid ${C.border}`, color: C.dim, letterSpacing: '0.05em' }}>
-              BUY AT UR OWN RISK 
+              BUY AT UR OWN RISK
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, color: C.dim }}>
@@ -484,8 +559,11 @@ const App: React.FC = () => {
             <motion.div key={result.timestamp} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
+              {/* ── GRADUATED BANNER — shown above everything when token graduated ── */}
+              {graduated && <GraduatedBanner mint={displayMint} />}
+
               {/* ── SCORE + META HERO ────────────────────────────────────────── */}
-              <Card idx={0} glow={sc.border} s={{ padding: 0, overflow: 'hidden' }}>
+              <Card idx={0} glow={graduated ? 'rgba(77,158,255,0.18)' : sc.border} s={{ padding: 0, overflow: 'hidden' }}>
                 {/* Top strip */}
                 <div style={{ padding: '14px 20px', borderBottom: `1px solid ${C.border2}`,
                   display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
@@ -495,8 +573,8 @@ const App: React.FC = () => {
                       color={getPhaseCfg(result.bondingCurve.phase).color}
                       bg={getPhaseCfg(result.bondingCurve.phase).bg}
                       border={getPhaseCfg(result.bondingCurve.phase).border} />
-                    {result.bondingCurve.state?.complete && (
-                      <Badge text="GRADUATED" color={C.blue} bg="rgba(77,158,255,0.07)" border="rgba(77,158,255,0.2)" />
+                    {graduated && (
+                      <Badge text="GRADUATED 🎓" color={C.blue} bg="rgba(77,158,255,0.07)" border="rgba(77,158,255,0.2)" />
                     )}
                     <span style={{ fontSize: 10, color: C.dim }}>scanned {ago(result.timestamp)}</span>
                   </div>
@@ -508,9 +586,9 @@ const App: React.FC = () => {
 
                 {/* Main content */}
                 <div style={{ padding: '20px', position: 'relative', overflow: 'hidden' }}>
-                  {/* ambient glow */}
                   <div style={{ position: 'absolute', top: -60, right: -40, width: 280, height: 280,
-                    borderRadius: '50%', background: sc.color, filter: 'blur(90px)', opacity: 0.05, pointerEvents: 'none' }} />
+                    borderRadius: '50%', background: graduated ? C.blue : sc.color,
+                    filter: 'blur(90px)', opacity: 0.05, pointerEvents: 'none' }} />
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 32, alignItems: 'center', position: 'relative' }}>
 
@@ -521,14 +599,17 @@ const App: React.FC = () => {
                           transition={{ delay: 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                           style={{ fontSize: 'clamp(64px,9vw,88px)', fontWeight: 900, lineHeight: 1,
                             letterSpacing: '-0.05em', fontVariantNumeric: 'tabular-nums',
-                            color: sc.color, textShadow: sc.glow }}>
+                            color: graduated ? C.blue : sc.color,
+                            textShadow: graduated ? '0 0 40px rgba(77,158,255,0.5)' : sc.glow }}>
                           <AnimatedNumber value={result.alphaScore} duration={1200} />
                         </motion.div>
                         <div style={{ fontSize: 9, letterSpacing: '0.25em', color: C.dim, margin: '5px 0 8px' }}>ALPHA SCORE / 100</div>
                         <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: '0.18em',
                           padding: '4px 14px', borderRadius: 999,
-                          background: sc.lBg, border: `1px solid ${sc.lBorder}`, color: sc.color }}>
-                          {sc.label}
+                          background: graduated ? 'rgba(77,158,255,0.08)' : sc.lBg,
+                          border: `1px solid ${graduated ? 'rgba(77,158,255,0.25)' : sc.lBorder}`,
+                          color: graduated ? C.blue : sc.color }}>
+                          {graduated ? 'GRADUATED' : sc.label}
                         </span>
                       </div>
                     </Tip>
@@ -551,39 +632,65 @@ const App: React.FC = () => {
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: C.dim, marginBottom: 5 }}>
                           <span>Bonding curve fill progress</span>
-                          <span style={{ color: C.green, fontWeight: 700 }}>{result.bondingCurve.progressPercent}%</span>
+                          <span style={{ color: graduated ? C.blue : C.green, fontWeight: 700 }}>
+                            {graduated ? '100%' : `${result.bondingCurve.progressPercent}%`}
+                          </span>
                         </div>
                         <div style={{ height: 5, borderRadius: 999, background: C.surface3, overflow: 'hidden' }}>
                           <motion.div initial={{ width: 0 }}
-                            animate={{ width: `${Math.min(safeNum(result.bondingCurve.progressPercent), 100)}%` }}
+                            animate={{ width: graduated ? '100%' : `${Math.min(safeNum(result.bondingCurve.progressPercent), 100)}%` }}
                             transition={{ delay: 0.15, duration: 1, ease: [0.22,1,0.36,1] }}
                             style={{ height: '100%', borderRadius: 999,
-                              background: `linear-gradient(90deg,${C.green},${C.greenDim})`,
-                              boxShadow: '0 0 6px rgba(0,255,148,0.35)' }} />
+                              background: graduated
+                                ? `linear-gradient(90deg,${C.blue},#3a8eef)`
+                                : `linear-gradient(90deg,${C.green},${C.greenDim})`,
+                              boxShadow: graduated ? '0 0 6px rgba(77,158,255,0.5)' : '0 0 6px rgba(0,255,148,0.35)' }} />
                         </div>
                         <div style={{ fontSize: 10, color: C.dim, marginTop: 4 }}>
-                          {result.bondingCurve.progressPercent < 33 ? '🟢 Fresh launch — low competition' :
-                           result.bondingCurve.progressPercent < 66 ? '🟡 Gaining traction' :
-                           '🔴 Near graduation — high risk'}
+                          {graduated
+                            ? '🎓 Graduated — trading on Raydium AMM now'
+                            : result.bondingCurve.progressPercent < 33 ? '🟢 Fresh launch — low competition'
+                            : result.bondingCurve.progressPercent < 66 ? '🟡 Gaining traction'
+                            : '🔴 Near graduation — high risk'}
                         </div>
                       </div>
                     </div>
 
-                    {/* RIGHT: key numbers */}
+                    {/* RIGHT: MCAP + LIQUIDITY */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 120 }}>
                       <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 10, padding: '10px 14px' }}>
                         <div style={{ fontSize: 9, letterSpacing: '0.2em', color: C.dim, marginBottom: 3 }}>MCAP</div>
-                        <div style={{ fontSize: 20, fontWeight: 900, fontVariantNumeric: 'tabular-nums' }}>
-                          {loc(result.bondingCurve.mcapSol)}
-                        </div>
-                        <div style={{ fontSize: 10, color: C.dim }}>SOL</div>
+                        {graduated ? (
+                          <>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: C.blue, fontVariantNumeric: 'tabular-nums' }}>
+                              ON RAYDIUM
+                            </div>
+                            <div style={{ fontSize: 9, color: '#4a6a8a', marginTop: 2 }}>pump curve empty</div>
+                          </>
+                        ) : (
+                          <>
+                            <div style={{ fontSize: 20, fontWeight: 900, fontVariantNumeric: 'tabular-nums' }}>
+                              {loc(result.bondingCurve.mcapSol)}
+                            </div>
+                            <div style={{ fontSize: 10, color: C.dim }}>SOL</div>
+                          </>
+                        )}
                       </div>
                       <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 10, padding: '10px 14px' }}>
                         <div style={{ fontSize: 9, letterSpacing: '0.2em', color: C.dim, marginBottom: 3 }}>LIQUIDITY</div>
-                        <div style={{ fontSize: 20, fontWeight: 900, color: C.green, fontVariantNumeric: 'tabular-nums' }}>
-                          {fx(result.bondingCurve.liquidityDepthSol, 2)}
-                        </div>
-                        <div style={{ fontSize: 10, color: C.dim }}>SOL real</div>
+                        {graduated ? (
+                          <>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: C.blue }}>MIGRATED</div>
+                            <div style={{ fontSize: 9, color: '#4a6a8a', marginTop: 2 }}>→ Raydium pool</div>
+                          </>
+                        ) : (
+                          <>
+                            <div style={{ fontSize: 20, fontWeight: 900, color: C.green, fontVariantNumeric: 'tabular-nums' }}>
+                              {fx(result.bondingCurve.liquidityDepthSol, 2)}
+                            </div>
+                            <div style={{ fontSize: 10, color: C.dim }}>SOL real</div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -598,69 +705,75 @@ const App: React.FC = () => {
                   <SLabel icon="📈" title="BONDING CURVE" />
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                     <Stat label="TOKEN PRICE"
-                      value={<span style={{ fontSize: 13 }}>{fx(result.bondingCurve.currentPriceSol, 10)}</span>}
-                      sub="SOL per token" tip="Live price from the constant-product AMM" />
+                      value={graduated
+                        ? <span style={{ fontSize: 11, color: C.blue }}>SEE RAYDIUM</span>
+                        : <span style={{ fontSize: 13 }}>{fx(result.bondingCurve.currentPriceSol, 10)}</span>}
+                      sub={graduated ? 'curve is empty' : 'SOL per token'}
+                      tip={graduated ? 'Token graduated — check Raydium for live price' : 'Live price from the constant-product AMM'} />
                     <Stat label="EXPLOSION"
-                      value={`${safeNum(result.curveAnalytics.explosionRatio)}x`}
-                      sub="upside to grad" color={C.amber}
-                      accent={C.amber}
-                      tip="Price multiple remaining if curve graduates to Raydium" />
+                      value={graduated ? 'N/A' : `${safeNum(result.curveAnalytics.explosionRatio)}x`}
+                      sub={graduated ? 'already graduated' : 'upside to grad'}
+                      color={graduated ? C.dim : C.amber}
+                      accent={graduated ? undefined : C.amber}
+                      tip={graduated ? 'Token already graduated to Raydium' : 'Price multiple remaining if curve graduates to Raydium'} />
                     <Stat label="REAL SOL IN"
-                      value={fx(result.bondingCurve.liquidityDepthSol, 3)}
-                      sub="SOL deposited" color={C.green}
-                      accent={C.green}
-                      tip="Actual SOL that has entered the bonding curve (not virtual)" />
+                      value={graduated ? '0.000' : fx(result.bondingCurve.liquidityDepthSol, 3)}
+                      sub={graduated ? 'migrated to Raydium' : 'SOL deposited'}
+                      color={graduated ? C.dim : C.green}
+                      accent={graduated ? undefined : C.green}
+                      tip={graduated ? 'All SOL migrated to Raydium on graduation' : 'Actual SOL that has entered the bonding curve (not virtual)'} />
                     <Stat label="PHASE"
-                      value={result.bondingCurve.phase}
-                      sub={`${result.bondingCurve.progressPercent}% filled`}
-                      color={getPhaseCfg(result.bondingCurve.phase).color}
-                      tip="EARLY <33% · MID 33–66% · LATE >66%" />
+                      value={graduated ? 'DONE' : result.bondingCurve.phase}
+                      sub={graduated ? '100% — graduated' : `${result.bondingCurve.progressPercent}% filled`}
+                      color={graduated ? C.blue : getPhaseCfg(result.bondingCurve.phase).color}
+                      tip="EARLY <33% · MID 33–66% · LATE >66% · DONE = graduated" />
                   </div>
                 </Card>
 
                 {/* Buy Simulations */}
                 <Card idx={2} s={{ padding: 18 }}>
-                  <SLabel icon="💰" title="BUY SIMULATIONS" sub="incl. 1% pump.fun fee" />
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {result.simulations.map((sim, i) => {
-                      const ic = sim.priceImpact > 5 ? C.red : sim.priceImpact > 2 ? C.amber : C.green;
-                      const impactLabel = sim.priceImpact > 5 ? 'HIGH IMPACT' : sim.priceImpact > 2 ? 'MED IMPACT' : 'LOW IMPACT';
-                      return (
-                        <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.15 + i * 0.07 }}
-                          style={{ background: C.surface2, border: `1px solid ${C.border2}`,
-                            borderRadius: 10, padding: '12px 14px',
-                            display: 'grid', gridTemplateColumns: '80px 1fr auto', alignItems: 'center', gap: 12 }}>
-                          {/* SOL in */}
-                          <div>
-                            <div style={{ fontSize: 9, color: C.dim, letterSpacing: '0.15em' }}>SPEND</div>
-                            <div style={{ fontSize: 17, fontWeight: 900, color: C.white }}>{sim.solAmount}</div>
-                            <div style={{ fontSize: 10, color: C.dim }}>SOL</div>
-                          </div>
-                          {/* Tokens out */}
-                          <div>
-                            <div style={{ fontSize: 9, color: C.dim, letterSpacing: '0.15em' }}>RECEIVE</div>
-                            <div style={{ fontSize: 17, fontWeight: 900, color: C.green, fontVariantNumeric: 'tabular-nums' }}>
-                              {loc(sim.tokensOut)}
+                  <SLabel icon="💰" title="BUY SIMULATIONS" sub={graduated ? 'unavailable' : 'incl. 1% pump.fun fee'} />
+                  {graduated ? (
+                    <GraduatedSimPlaceholder mint={displayMint} />
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {result.simulations.map((sim, i) => {
+                        const ic = sim.priceImpact > 5 ? C.red : sim.priceImpact > 2 ? C.amber : C.green;
+                        const impactLabel = sim.priceImpact > 5 ? 'HIGH IMPACT' : sim.priceImpact > 2 ? 'MED IMPACT' : 'LOW IMPACT';
+                        return (
+                          <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.15 + i * 0.07 }}
+                            style={{ background: C.surface2, border: `1px solid ${C.border2}`,
+                              borderRadius: 10, padding: '12px 14px',
+                              display: 'grid', gridTemplateColumns: '80px 1fr auto', alignItems: 'center', gap: 12 }}>
+                            <div>
+                              <div style={{ fontSize: 9, color: C.dim, letterSpacing: '0.15em' }}>SPEND</div>
+                              <div style={{ fontSize: 17, fontWeight: 900, color: C.white }}>{sim.solAmount}</div>
+                              <div style={{ fontSize: 10, color: C.dim }}>SOL</div>
                             </div>
-                            <div style={{ fontSize: 10, color: C.dim }}>tokens</div>
-                          </div>
-                          {/* Impact badge */}
-                          <div style={{ textAlign: 'right' }}>
-                            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
-                              padding: '3px 7px', borderRadius: 6, color: ic,
-                              background: `${ic}12`, border: `1px solid ${ic}30` }}>
-                              {impactLabel}
-                            </span>
-                            <div style={{ fontSize: 10, color: ic, marginTop: 3 }}>+{fx(sim.priceImpact, 2)}%</div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                    <div style={{ fontSize: 10, color: C.dim, textAlign: 'center', paddingTop: 2 }}>
-                      All amounts after 1% pump.fun fee deducted
+                            <div>
+                              <div style={{ fontSize: 9, color: C.dim, letterSpacing: '0.15em' }}>RECEIVE</div>
+                              <div style={{ fontSize: 17, fontWeight: 900, color: C.green, fontVariantNumeric: 'tabular-nums' }}>
+                                {loc(sim.tokensOut)}
+                              </div>
+                              <div style={{ fontSize: 10, color: C.dim }}>tokens</div>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
+                                padding: '3px 7px', borderRadius: 6, color: ic,
+                                background: `${ic}12`, border: `1px solid ${ic}30` }}>
+                                {impactLabel}
+                              </span>
+                              <div style={{ fontSize: 10, color: ic, marginTop: 3 }}>+{fx(sim.priceImpact, 2)}%</div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                      <div style={{ fontSize: 10, color: C.dim, textAlign: 'center', paddingTop: 2 }}>
+                        All amounts after 1% pump.fun fee deducted
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </Card>
               </div>
 
@@ -686,7 +799,6 @@ const App: React.FC = () => {
                       {safeNum(result.velocity.recentTxCount)} txs
                     </div>
                   </div>
-                  {/* velocity bar */}
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: C.dim, marginBottom: 4 }}>
                       <span>activity</span>
