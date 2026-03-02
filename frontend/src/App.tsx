@@ -299,7 +299,7 @@ const App: React.FC = () => {
     if (!target) return;
     setLoading(true); setError(''); setResult(null);
     try {
-      const res = await fetch('http://localhost:3000/api/launch', {
+      const res = await fetch('https://pump-terminal.onrender.com/api/launch', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tokenMint: target }),
       });
@@ -354,7 +354,7 @@ const App: React.FC = () => {
             </span>
             <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 5,
               background: C.surface3, border: `1px solid ${C.border}`, color: C.dim, letterSpacing: '0.05em' }}>
-              BETA
+              BUY AT UR OWN RISK 
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, color: C.dim }}>
