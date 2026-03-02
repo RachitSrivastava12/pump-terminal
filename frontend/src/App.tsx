@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { CSSProperties } from 'react';
-
+import { Analytics } from "@vercel/analytics/react"
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface BuySimulation {
@@ -343,7 +343,7 @@ const App: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', background: C.bg, color: C.white, fontFamily: font }}>
       <GlobalStyle />
-
+ <Analytics />
       {/* ── HEADER ─────────────────────────────────────────────────────────── */}
       <header style={{ background: C.surface2, borderBottom: `1px solid ${C.border2}`, position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ ...wrap, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
