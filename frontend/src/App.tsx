@@ -348,8 +348,7 @@ const App: React.FC = () => {
       <header style={{ background: C.surface2, borderBottom: `1px solid ${C.border2}`, position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ ...wrap, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 26, height: 26, borderRadius: 7, background: C.green, color: '#000',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 13 }}>P</div>
+        
             <span style={{ fontWeight: 900, fontSize: 14, letterSpacing: '-0.01em' }}>
               pump<span style={{ color: C.green }}>terminal</span>
             </span>
