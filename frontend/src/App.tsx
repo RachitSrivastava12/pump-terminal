@@ -370,7 +370,7 @@ const App: React.FC = () => {
     if (!target) return;
     setLoading(true); setError(''); setResult(null);
     try {
-      const res = await fetch('http://localhost:3000/api/launch', {
+      const res = await fetch('https://pump-terminal.onrender.com/api/launch', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tokenMint: target }),
       });
