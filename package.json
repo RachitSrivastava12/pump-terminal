@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "start": "node dist/server.ts"
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@solana/spl-token": "^0.4.14",

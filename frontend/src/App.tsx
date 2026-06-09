@@ -60,9 +60,9 @@ const C = {
   red:      '#FF4444',
   blue:     '#4D9EFF',
   white:    '#ffffff',
-  muted:    '#555555',
-  dim:      '#3a3a3a',
-  dimmer:   '#282828',
+  muted:    '#b4b4b4',
+  dim:      '#8a8a8a',
+  dimmer:   '#5a5a5a',
   dimmest:  '#1e1e1e',
 };
 
@@ -92,11 +92,11 @@ const GlobalStyle = () => {
     el.innerHTML = `
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
       html, body, #root { height: 100%; }
-      body { background: ${C.bg}; color: ${C.white}; font-family: ${font}; -webkit-font-smoothing: antialiased; }
+      body { background: ${C.bg}; color: ${C.white}; font-family: ${font}; font-size: 15px; -webkit-font-smoothing: antialiased; }
       ::-webkit-scrollbar { width: 4px; height: 4px; }
       ::-webkit-scrollbar-track { background: ${C.surface}; }
       ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
-      input::placeholder { color: #282828; }
+      input::placeholder { color: #5a5a5a; }
       input:focus { outline: none; }
       button { cursor: pointer; font-family: ${font}; }
       a { text-decoration: none; }
@@ -145,8 +145,8 @@ const Tip = ({ text, children }: { text: string; children: React.ReactNode }) =>
             exit={{ opacity: 0, y: 5 }} transition={{ duration: 0.1 }}
             style={{ position: 'absolute', bottom: '102%', left: '50%', transform: 'translateX(-50%)',
               marginBottom: 1, zIndex: 200, pointerEvents: 'none' }}>
-            <div style={{ background: '#1c1c1c', border: '1px solid #2c2c2c', color: '#999', fontSize: 11,
-              padding: '5px 10px', borderRadius: 7, whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.7)' }}>
+            <div style={{ background: '#1c1c1c', border: '1px solid #2c2c2c', color: '#999', fontSize: 12,
+              padding: '6px 12px', borderRadius: 8, whiteSpace: 'nowrap', boxShadow: '0 8px 24px rgba(0,0,0,0.7)' }}>
               {text}
             </div>
           </motion.div>
@@ -163,9 +163,9 @@ const Toast = ({ message, onClose }: { message: string; onClose: () => void }) =
     <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 12 }}
       style={{ position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)', zIndex: 9999,
         background: '#0a1f12', border: '1px solid rgba(0,255,148,0.25)', color: C.green,
-        fontFamily: font, fontSize: 12, padding: '9px 18px', borderRadius: 12,
+        fontFamily: font, fontSize: 13, padding: '10px 20px', borderRadius: 12,
         boxShadow: '0 8px 32px rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', gap: 7 }}>
-      <span style={{ fontSize: 10 }}>✓</span> {message}
+      <span style={{ fontSize: 11 }}>✓</span> {message}
     </motion.div>
   );
 };
@@ -180,20 +180,20 @@ const Sk = ({ w = '100%', h = 14 }: { w?: string | number; h?: number }) => (
 // ─── Loading ───────────────────────────────────────────────────────────────────
 const LoadingState = () => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '60px 0 40px', gap: 16 }}>
-      <div style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid transparent',
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '72px 0 48px', gap: 18 }}>
+      <div style={{ width: 44, height: 44, borderRadius: '50%', border: '2px solid transparent',
         borderTopColor: C.green, borderRightColor: 'rgba(0,255,148,0.15)', animation: 'spin 1s linear infinite' }} />
       <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <div style={{ color: C.green, fontSize: 12, letterSpacing: '0.3em', animation: 'pulse 1.8s infinite' }}>
+        <div style={{ color: C.green, fontSize: 13, letterSpacing: '0.3em', animation: 'pulse 1.8s infinite' }}>
           SCANNING ON-CHAIN
         </div>
-        <div style={{ color: C.dim, fontSize: 11 }}>curve · holders · velocity · congestion</div>
+        <div style={{ color: C.dim, fontSize: 12 }}>curve · holders · velocity · congestion</div>
       </div>
     </div>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 12 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,300px),1fr))', gap: 16 }}>
       {[...Array(6)].map((_, i) => (
-        <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: 18,
-          display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: 22,
+          display: 'flex', flexDirection: 'column', gap: 12 }}>
           <Sk w="30%" h={10} /><Sk w="60%" h={24} /><Sk h={10} /><Sk w="75%" h={10} />
         </div>
       ))}
@@ -207,15 +207,15 @@ const LoadingState = () => (
 const GraduatedBanner = ({ mint }: { mint: string }) => (
   <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
     style={{ background: 'rgba(77,158,255,0.05)', border: '1px solid rgba(77,158,255,0.25)',
-      borderRadius: 12, padding: '14px 18px', display: 'flex', flexWrap: 'wrap',
-      alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <span style={{ fontSize: 18, animation: 'gradPulse 2s infinite' }}>🎓</span>
+      borderRadius: 14, padding: '18px 22px', display: 'flex', flexWrap: 'wrap',
+      alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span style={{ fontSize: 22, animation: 'gradPulse 2s infinite' }}>🎓</span>
       <div>
-        <div style={{ fontSize: 12, fontWeight: 700, color: C.blue, letterSpacing: '0.08em', marginBottom: 2 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: C.blue, letterSpacing: '0.08em', marginBottom: 3 }}>
           TOKEN GRADUATED TO RAYDIUM
         </div>
-        <div style={{ fontSize: 11, color: '#4a6a8a', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 12, color: '#4a6a8a', lineHeight: 1.55 }}>
           This token completed its bonding curve and migrated to Raydium AMM.
           The pump.fun curve is empty — MCAP, liquidity, and buy simulations
           show <strong style={{ color: '#5a8aaa' }}>0</strong> because all SOL and tokens left this curve.
@@ -226,8 +226,8 @@ const GraduatedBanner = ({ mint }: { mint: string }) => (
     <a
       href={`https://raydium.io/swap/?inputMint=sol&outputMint=${mint}`}
       target="_blank" rel="noopener noreferrer"
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700,
-        letterSpacing: '0.1em', padding: '8px 14px', borderRadius: 8, color: C.blue,
+      style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700,
+        letterSpacing: '0.1em', padding: '10px 16px', borderRadius: 9, color: C.blue,
         background: 'rgba(77,158,255,0.08)', border: '1px solid rgba(77,158,255,0.25)',
         whiteSpace: 'nowrap', transition: 'background 0.15s' }}
       onMouseEnter={e => e.currentTarget.style.background = 'rgba(77,158,255,0.15)'}
@@ -269,12 +269,12 @@ const Card = ({ children, s, idx = 0, glow }: {
 
 // ─── Section label ─────────────────────────────────────────────────────────────
 const SLabel = ({ icon, title, sub }: { icon: string; title: string; sub?: string }) => (
-  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-      <span style={{ fontSize: 13 }}>{icon}</span>
-      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.25em', color: C.muted }}>{title}</span>
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+      <span style={{ fontSize: 16 }}>{icon}</span>
+      <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.22em', color: C.muted }}>{title}</span>
     </div>
-    {sub && <span style={{ fontSize: 10, color: C.dim, letterSpacing: '0.05em' }}>{sub}</span>}
+    {sub && <span style={{ fontSize: 11, color: C.dim, letterSpacing: '0.05em' }}>{sub}</span>}
   </div>
 );
 
@@ -284,11 +284,11 @@ const Stat = ({ label, value, sub, color = C.white, tip, accent }: {
   color?: string; tip?: string; accent?: string;
 }) => {
   const inner = (
-    <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 10, padding: '12px 14px',
-      borderLeft: accent ? `2px solid ${accent}` : undefined, transition: 'border-color 0.15s' }}>
-      <div style={{ fontSize: 9, letterSpacing: '0.22em', color: '#3a3a3a', marginBottom: 5, textTransform: 'uppercase' }}>{label}</div>
-      <div style={{ fontSize: 20, fontWeight: 900, color, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
-      {sub && <div style={{ fontSize: 10, color: C.dim, marginTop: 4 }}>{sub}</div>}
+    <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 12, padding: '16px 18px',
+      borderLeft: accent ? `3px solid ${accent}` : undefined, transition: 'border-color 0.15s' }}>
+      <div style={{ fontSize: 11, letterSpacing: '0.18em', color: '#3a3a3a', marginBottom: 7, textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ fontSize: 24, fontWeight: 900, color, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{value}</div>
+      {sub && <div style={{ fontSize: 12, color: C.dim, marginTop: 6 }}>{sub}</div>}
     </div>
   );
   return tip ? <Tip text={tip}>{inner}</Tip> : inner;
@@ -296,7 +296,7 @@ const Stat = ({ label, value, sub, color = C.white, tip, accent }: {
 
 // ─── Badge ─────────────────────────────────────────────────────────────────────
 const Badge = ({ text, color, bg, border }: { text: string; color: string; bg: string; border: string }) => (
-  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', padding: '3px 9px',
+  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', padding: '5px 12px',
     borderRadius: 999, background: bg, border: `1px solid ${border}`, color }}>
     {text}
   </span>
@@ -308,12 +308,13 @@ const Btn = ({ onClick, children, primary, disabled, s }: {
 }) => (
   <motion.button whileHover={{ scale: disabled ? 1 : 1.02 }} whileTap={{ scale: disabled ? 1 : 0.96 }}
     onClick={onClick} disabled={disabled}
-    style={{ fontFamily: font, fontSize: 12, fontWeight: 700, padding: '10px 20px', borderRadius: 10,
+    style={{ fontFamily: font, fontSize: 13, fontWeight: 700, padding: '12px 22px', borderRadius: 11,
       border: primary ? 'none' : `1px solid #252525`,
       cursor: disabled ? 'not-allowed' : 'pointer',
       opacity: disabled ? 0.4 : 1,
       background: primary ? C.green : '#131313',
       color: primary ? '#000' : C.muted,
+      lineHeight: 1.2,
       transition: 'opacity 0.15s', ...s }}>
     {children}
   </motion.button>
@@ -327,16 +328,16 @@ const Divider = () => <div style={{ height: 1, background: C.border2, margin: '0
 // Simulations are meaningless on an empty curve.
 const GraduatedSimPlaceholder = ({ mint }: { mint: string }) => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-    padding: '32px 20px', gap: 10, textAlign: 'center' }}>
-    <div style={{ fontSize: 22 }}>🎓</div>
-    <div style={{ fontSize: 11, fontWeight: 700, color: C.blue, letterSpacing: '0.08em' }}>CURVE IS EMPTY</div>
-    <div style={{ fontSize: 11, color: C.dim, lineHeight: 1.6, maxWidth: 240 }}>
+    padding: '42px 24px', gap: 12, textAlign: 'center' }}>
+    <div style={{ fontSize: 28 }}>🎓</div>
+    <div style={{ fontSize: 13, fontWeight: 700, color: C.blue, letterSpacing: '0.08em' }}>CURVE IS EMPTY</div>
+    <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.6, maxWidth: 320 }}>
       Token graduated to Raydium. Buy simulations are unavailable — there are no tokens left in the pump.fun curve to purchase.
     </div>
     <a href={`https://raydium.io/swap/?inputMint=sol&outputMint=${mint}`}
       target="_blank" rel="noopener noreferrer"
-      style={{ marginTop: 4, fontSize: 11, color: C.blue, display: 'flex', alignItems: 'center', gap: 4,
-        padding: '6px 14px', borderRadius: 8, background: 'rgba(77,158,255,0.07)',
+      style={{ marginTop: 6, fontSize: 12, color: C.blue, display: 'flex', alignItems: 'center', gap: 5,
+        padding: '8px 16px', borderRadius: 9, background: 'rgba(77,158,255,0.07)',
         border: '1px solid rgba(77,158,255,0.2)', transition: 'background 0.15s' }}
       onMouseEnter={e => e.currentTarget.style.background = 'rgba(77,158,255,0.14)'}
       onMouseLeave={e => e.currentTarget.style.background = 'rgba(77,158,255,0.07)'}>
@@ -347,7 +348,8 @@ const GraduatedSimPlaceholder = ({ mint }: { mint: string }) => (
 
 // ─── Main app ──────────────────────────────────────────────────────────────────
 const MAX_RECENT = 5;
-const wrap: CSSProperties = { maxWidth: 1080, margin: '0 auto', padding: '0 20px' };
+const SHELL_MAX_WIDTH = 1320;
+const wrap: CSSProperties = { maxWidth: SHELL_MAX_WIDTH, margin: '0 auto', padding: '0 clamp(18px,3vw,32px)' };
 
 const App: React.FC = () => {
   const [mint, setMint]               = useState('HuizJtx758s4Lf9ZPEE49o6kdD8nZYeBoSVogVwupump');
@@ -370,7 +372,7 @@ const App: React.FC = () => {
     if (!target) return;
     setLoading(true); setError(''); setResult(null);
     try {
-      const res = await fetch('https://pump-terminal.onrender.com/api/launch', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL ?? 'https://api.pumpterms.fun'}/api/launch`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tokenMint: target }),
       });
@@ -383,7 +385,7 @@ const App: React.FC = () => {
         return u;
       });
     } catch (e: any) {
-      setError(e.message || 'Cannot reach backend on port 3000');
+      setError(e.message || 'Cannot reach backend at api.pumpterms.fun');
     } finally { setLoading(false); }
   }, [mint]);
 
@@ -422,20 +424,20 @@ const App: React.FC = () => {
 
       {/* ── HEADER ─────────────────────────────────────────────────────────── */}
       <header style={{ background: C.surface2, borderBottom: `1px solid ${C.border2}`, position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ ...wrap, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontWeight: 900, fontSize: 14, letterSpacing: '-0.01em' }}>
+        <div style={{ ...wrap, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontWeight: 900, fontSize: 17, letterSpacing: '-0.01em' }}>
               pump<span style={{ color: C.green }}>terminal</span>
             </span>
-            <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 5,
+            <span style={{ fontSize: 11, padding: '4px 9px', borderRadius: 6,
               background: C.surface3, border: `1px solid ${C.border}`, color: C.dim, letterSpacing: '0.05em' }}>
               BUY AT UR OWN RISK
             </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, color: C.dim }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: C.dim }}>
             {autoRefresh && (
-              <span style={{ color: C.green, display: 'flex', alignItems: 'center', gap: 5, animation: 'pulse 2s infinite' }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: C.green, display: 'inline-block' }} />
+              <span style={{ color: C.green, display: 'flex', alignItems: 'center', gap: 6, animation: 'pulse 2s infinite' }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: C.green, display: 'inline-block' }} />
                 AUTO
               </span>
             )}
@@ -444,16 +446,16 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main style={{ ...wrap, paddingTop: 28, paddingBottom: 56 }}>
+      <main style={{ ...wrap, paddingTop: 40, paddingBottom: 72 }}>
 
         {/* ── HERO ───────────────────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
-          style={{ paddingBottom: 4, marginBottom: 16 }}>
-          <h1 style={{ fontSize: 'clamp(20px,3.5vw,28px)', fontWeight: 900, letterSpacing: '-0.025em',
-            lineHeight: 1.2, marginBottom: 10 }}>
+          style={{ paddingBottom: 6, marginBottom: 22 }}>
+          <h1 style={{ fontSize: 'clamp(28px,4.4vw,44px)', fontWeight: 900, letterSpacing: '-0.025em',
+            lineHeight: 1.12, marginBottom: 14 }}>
             On-chain intel for <span style={{ color: C.green }}>Pump.fun</span> launches.
           </h1>
-          <p style={{ fontSize: 12, lineHeight: 1.8, color: '#4a4a4a', maxWidth: 580 }}>
+          <p style={{ fontSize: 15, lineHeight: 1.7, color: '#5a5a5a', maxWidth: 760 }}>
             Paste any mint → get bonding curve phase, real buy simulations (with 1% fee),
             holder distribution, tx velocity, and an{' '}
             <span style={{ color: C.green }}>Alpha Score (0–100)</span>{' '}
@@ -464,10 +466,10 @@ const App: React.FC = () => {
 
         {/* Feature row */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
-          style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
+          style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 24 }}>
           {[['📈','Bonding Curve'],['💰','Buy Sims (1% fee)'],['👥','Holder Dist.'],['⚡','Velocity'],['🌐','Congestion'],['🎯','Alpha Score']].map(([icon,label],i) => (
-            <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11,
-              padding: '4px 10px', borderRadius: 999, background: C.surface, border: `1px solid ${C.border}`, color: C.muted }}>
+            <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12,
+              padding: '7px 12px', borderRadius: 999, background: C.surface, border: `1px solid ${C.border}`, color: C.muted }}>
               {icon} {label}
             </span>
           ))}
@@ -475,31 +477,31 @@ const App: React.FC = () => {
 
         {/* ── SEARCH ─────────────────────────────────────────────────────────── */}
         <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}
-          style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16, marginBottom: 14 }}>
+          style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: 22, marginBottom: 18 }}>
 
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             <input type="text" value={mint} onChange={e => setMint(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && analyze()}
               placeholder="Paste token mint address..."
-              style={{ flex: 1, minWidth: 200, background: C.surface2, border: `1px solid ${C.border}`,
-                borderRadius: 9, padding: '10px 14px', fontSize: 12, fontFamily: font, color: C.white }}
+              style={{ flex: 1, minWidth: 280, background: C.surface2, border: `1px solid ${C.border}`,
+                borderRadius: 11, padding: '14px 16px', fontSize: 15, fontFamily: font, color: C.white }}
               onFocus={e => { e.currentTarget.style.borderColor = 'rgba(0,255,148,0.4)'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(0,255,148,0.06)'; }}
               onBlur={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = 'none'; }}
             />
-            <div style={{ display: 'flex', gap: 7 }}>
-              <Btn primary onClick={() => analyze()} disabled={loading || !mint} s={{ minWidth: 100 }}>
+            <div style={{ display: 'flex', gap: 9 }}>
+              <Btn primary onClick={() => analyze()} disabled={loading || !mint} s={{ minWidth: 132 }}>
                 {loading ? (
                   <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <span style={{ width: 12, height: 12, borderRadius: '50%', border: '1.5px solid transparent',
+                    <span style={{ width: 14, height: 14, borderRadius: '50%', border: '1.5px solid transparent',
                       borderTopColor: '#000', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
                     SCANNING
                   </span>
                 ) : '⚡ SCAN'}
               </Btn>
-              {result && <Btn onClick={() => analyze()} disabled={loading} s={{ padding: '10px 12px', fontSize: 15 }}>↺</Btn>}
+              {result && <Btn onClick={() => analyze()} disabled={loading} s={{ padding: '12px 14px', fontSize: 17 }}>↺</Btn>}
               <Tip text={autoRefresh ? 'Auto-refresh ON every 15s — click to stop' : 'Enable 15s auto-refresh'}>
                 <Btn onClick={() => setAutoRefresh(v => !v)} s={{
-                  padding: '10px 12px', fontSize: 10, letterSpacing: '0.12em',
+                  padding: '12px 14px', fontSize: 12, letterSpacing: '0.1em',
                   background: autoRefresh ? 'rgba(0,255,148,0.07)' : '#131313',
                   border: `1px solid ${autoRefresh ? 'rgba(0,255,148,0.28)' : '#252525'}`,
                   color: autoRefresh ? C.green : C.dim,
@@ -510,12 +512,12 @@ const App: React.FC = () => {
 
           {recent.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6,
-              marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border2}` }}>
-              <span style={{ fontSize: 9, letterSpacing: '0.22em', color: C.dim }}>RECENT</span>
+              marginTop: 14, paddingTop: 14, borderTop: `1px solid ${C.border2}` }}>
+              <span style={{ fontSize: 11, letterSpacing: '0.18em', color: C.dim }}>RECENT</span>
               {recent.map((s, i) => (
                 <motion.button key={i} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                   onClick={() => { setMint(s); analyze(s); }}
-                  style={{ fontFamily: font, fontSize: 10, padding: '3px 10px', borderRadius: 7,
+                  style={{ fontFamily: font, fontSize: 11, padding: '6px 12px', borderRadius: 8,
                     background: C.surface2, border: `1px solid ${C.border}`, color: C.muted, cursor: 'pointer' }}>
                   {s.slice(0, 8)}…{s.slice(-6)}
                 </motion.button>
@@ -530,7 +532,7 @@ const App: React.FC = () => {
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden', marginBottom: 12 }}>
               <div style={{ background: 'rgba(255,68,68,0.05)', border: '1px solid rgba(255,68,68,0.18)',
-                color: C.red, borderRadius: 10, padding: '12px 16px', fontSize: 12 }}>
+                color: C.red, borderRadius: 12, padding: '14px 18px', fontSize: 13 }}>
                 ⚠ {error}
               </div>
             </motion.div>
@@ -543,10 +545,10 @@ const App: React.FC = () => {
         {/* ── EMPTY ──────────────────────────────────────────────────────────── */}
         {!result && !loading && !error && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.18 }}
-            style={{ border: `1px dashed ${C.border}`, borderRadius: 14, padding: '52px 24px', textAlign: 'center' }}>
-            <div style={{ fontSize: 26, marginBottom: 10 }}>🔎</div>
-            <div style={{ fontWeight: 700, fontSize: 14, color: C.white, marginBottom: 6 }}>Ready to scan</div>
-            <p style={{ fontSize: 12, color: C.muted }}>
+            style={{ border: `1px dashed ${C.border}`, borderRadius: 16, padding: '72px 28px', textAlign: 'center' }}>
+            <div style={{ fontSize: 34, marginBottom: 12 }}>🔎</div>
+            <div style={{ fontWeight: 700, fontSize: 17, color: C.white, marginBottom: 8 }}>Ready to scan</div>
+            <p style={{ fontSize: 14, color: C.muted }}>
               Paste a Pump.fun mint above and hit{' '}
               <span style={{ color: C.green }}>⚡ SCAN</span>.
             </p>
@@ -557,7 +559,7 @@ const App: React.FC = () => {
         <AnimatePresence>
           {result && !loading && (
             <motion.div key={result.timestamp} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
               {/* ── GRADUATED BANNER — shown above everything when token graduated ── */}
               {graduated && <GraduatedBanner mint={displayMint} />}
@@ -565,9 +567,9 @@ const App: React.FC = () => {
               {/* ── SCORE + META HERO ────────────────────────────────────────── */}
               <Card idx={0} glow={graduated ? 'rgba(77,158,255,0.18)' : sc.border} s={{ padding: 0, overflow: 'hidden' }}>
                 {/* Top strip */}
-                <div style={{ padding: '14px 20px', borderBottom: `1px solid ${C.border2}`,
-                  display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+                <div style={{ padding: '16px 24px', borderBottom: `1px solid ${C.border2}`,
+                  display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 10 }}>
                     {result.isPumpToken && <Badge text="PUMP.FUN ✓" color={C.green} bg="rgba(0,255,148,0.07)" border="rgba(0,255,148,0.2)" />}
                     <Badge text={`${result.bondingCurve.phase} PHASE`}
                       color={getPhaseCfg(result.bondingCurve.phase).color}
@@ -576,36 +578,36 @@ const App: React.FC = () => {
                     {graduated && (
                       <Badge text="GRADUATED 🎓" color={C.blue} bg="rgba(77,158,255,0.07)" border="rgba(77,158,255,0.2)" />
                     )}
-                    <span style={{ fontSize: 10, color: C.dim }}>scanned {ago(result.timestamp)}</span>
+                    <span style={{ fontSize: 11, color: C.dim }}>scanned {ago(result.timestamp)}</span>
                   </div>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <Btn onClick={download} s={{ fontSize: 11, padding: '6px 12px' }}>↓ JSON</Btn>
-                    <Btn onClick={() => copy(JSON.stringify(result, null, 2), 'Copied!')} s={{ fontSize: 11, padding: '6px 12px' }}>⧉ Copy</Btn>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <Btn onClick={download} s={{ fontSize: 12, padding: '8px 14px' }}>↓ JSON</Btn>
+                    <Btn onClick={() => copy(JSON.stringify(result, null, 2), 'Copied!')} s={{ fontSize: 12, padding: '8px 14px' }}>⧉ Copy</Btn>
                   </div>
                 </div>
 
                 {/* Main content */}
-                <div style={{ padding: '20px', position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: -60, right: -40, width: 280, height: 280,
+                <div style={{ padding: '28px', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: -70, right: -44, width: 340, height: 340,
                     borderRadius: '50%', background: graduated ? C.blue : sc.color,
                     filter: 'blur(90px)', opacity: 0.05, pointerEvents: 'none' }} />
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 32, alignItems: 'center', position: 'relative' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 40, alignItems: 'center', position: 'relative' }}>
 
                     {/* ALPHA SCORE */}
                     <Tip text="Composite: velocity (25pts) + distribution (30pts) + whale risk (20pts) + liquidity (15pts) + congestion (10pts)">
-                      <div style={{ textAlign: 'center', minWidth: 140 }}>
+                      <div style={{ textAlign: 'center', minWidth: 168 }}>
                         <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                           transition={{ delay: 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                          style={{ fontSize: 'clamp(64px,9vw,88px)', fontWeight: 900, lineHeight: 1,
+                          style={{ fontSize: 'clamp(82px,10vw,112px)', fontWeight: 900, lineHeight: 1,
                             letterSpacing: '-0.05em', fontVariantNumeric: 'tabular-nums',
                             color: graduated ? C.blue : sc.color,
                             textShadow: graduated ? '0 0 40px rgba(77,158,255,0.5)' : sc.glow }}>
                           <AnimatedNumber value={result.alphaScore} duration={1200} />
                         </motion.div>
-                        <div style={{ fontSize: 9, letterSpacing: '0.25em', color: C.dim, margin: '5px 0 8px' }}>ALPHA SCORE / 100</div>
-                        <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: '0.18em',
-                          padding: '4px 14px', borderRadius: 999,
+                        <div style={{ fontSize: 11, letterSpacing: '0.22em', color: C.dim, margin: '7px 0 10px' }}>ALPHA SCORE / 100</div>
+                        <span style={{ fontSize: 12, fontWeight: 900, letterSpacing: '0.16em',
+                          padding: '6px 16px', borderRadius: 999,
                           background: graduated ? 'rgba(77,158,255,0.08)' : sc.lBg,
                           border: `1px solid ${graduated ? 'rgba(77,158,255,0.25)' : sc.lBorder}`,
                           color: graduated ? C.blue : sc.color }}>
@@ -615,14 +617,14 @@ const App: React.FC = () => {
                     </Tip>
 
                     {/* CENTER: address + progress */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
                       <div>
-                        <div style={{ fontSize: 9, letterSpacing: '0.22em', color: C.dim, marginBottom: 4 }}>BONDING CURVE ADDRESS</div>
+                        <div style={{ fontSize: 11, letterSpacing: '0.18em', color: C.dim, marginBottom: 6 }}>BONDING CURVE ADDRESS</div>
                         <button onClick={() => copy(result.bondingCurve.address, 'Address copied!')}
-                          style={{ fontFamily: font, fontSize: 11, color: '#666', background: 'none', border: 'none',
+                          style={{ fontFamily: font, fontSize: 13, color: '#777', background: 'none', border: 'none',
                             cursor: 'pointer', textAlign: 'left', wordBreak: 'break-all', width: '100%' }}
                           onMouseEnter={e => e.currentTarget.style.color = '#999'}
-                          onMouseLeave={e => e.currentTarget.style.color = '#666'}>
+                          onMouseLeave={e => e.currentTarget.style.color = '#777'}>
                           {result.bondingCurve.address}
                           <span style={{ color: C.dim, marginLeft: 6 }}>⧉</span>
                         </button>
@@ -630,13 +632,13 @@ const App: React.FC = () => {
 
                       {/* Progress bar */}
                       <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: C.dim, marginBottom: 5 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: C.dim, marginBottom: 7 }}>
                           <span>Bonding curve fill progress</span>
                           <span style={{ color: graduated ? C.blue : C.green, fontWeight: 700 }}>
                             {graduated ? '100%' : `${result.bondingCurve.progressPercent}%`}
                           </span>
                         </div>
-                        <div style={{ height: 5, borderRadius: 999, background: C.surface3, overflow: 'hidden' }}>
+                        <div style={{ height: 8, borderRadius: 999, background: C.surface3, overflow: 'hidden' }}>
                           <motion.div initial={{ width: 0 }}
                             animate={{ width: graduated ? '100%' : `${Math.min(safeNum(result.bondingCurve.progressPercent), 100)}%` }}
                             transition={{ delay: 0.15, duration: 1, ease: [0.22,1,0.36,1] }}
@@ -646,7 +648,7 @@ const App: React.FC = () => {
                                 : `linear-gradient(90deg,${C.green},${C.greenDim})`,
                               boxShadow: graduated ? '0 0 6px rgba(77,158,255,0.5)' : '0 0 6px rgba(0,255,148,0.35)' }} />
                         </div>
-                        <div style={{ fontSize: 10, color: C.dim, marginTop: 4 }}>
+                        <div style={{ fontSize: 12, color: C.dim, marginTop: 6 }}>
                           {graduated
                             ? '🎓 Graduated — trading on Raydium AMM now'
                             : result.bondingCurve.progressPercent < 33 ? '🟢 Fresh launch — low competition'
@@ -657,38 +659,38 @@ const App: React.FC = () => {
                     </div>
 
                     {/* RIGHT: MCAP + LIQUIDITY */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 120 }}>
-                      <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 10, padding: '10px 14px' }}>
-                        <div style={{ fontSize: 9, letterSpacing: '0.2em', color: C.dim, marginBottom: 3 }}>MCAP</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 160 }}>
+                      <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 12, padding: '14px 16px' }}>
+                        <div style={{ fontSize: 11, letterSpacing: '0.18em', color: C.dim, marginBottom: 5 }}>MCAP</div>
                         {graduated ? (
                           <>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: C.blue, fontVariantNumeric: 'tabular-nums' }}>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: C.blue, fontVariantNumeric: 'tabular-nums' }}>
                               ON RAYDIUM
                             </div>
-                            <div style={{ fontSize: 9, color: '#4a6a8a', marginTop: 2 }}>pump curve empty</div>
+                            <div style={{ fontSize: 11, color: '#4a6a8a', marginTop: 3 }}>pump curve empty</div>
                           </>
                         ) : (
                           <>
-                            <div style={{ fontSize: 20, fontWeight: 900, fontVariantNumeric: 'tabular-nums' }}>
+                            <div style={{ fontSize: 24, fontWeight: 900, fontVariantNumeric: 'tabular-nums' }}>
                               {loc(result.bondingCurve.mcapSol)}
                             </div>
-                            <div style={{ fontSize: 10, color: C.dim }}>SOL</div>
+                            <div style={{ fontSize: 12, color: C.dim }}>SOL</div>
                           </>
                         )}
                       </div>
-                      <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 10, padding: '10px 14px' }}>
-                        <div style={{ fontSize: 9, letterSpacing: '0.2em', color: C.dim, marginBottom: 3 }}>LIQUIDITY</div>
+                      <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 12, padding: '14px 16px' }}>
+                        <div style={{ fontSize: 11, letterSpacing: '0.18em', color: C.dim, marginBottom: 5 }}>LIQUIDITY</div>
                         {graduated ? (
                           <>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: C.blue }}>MIGRATED</div>
-                            <div style={{ fontSize: 9, color: '#4a6a8a', marginTop: 2 }}>→ Raydium pool</div>
+                            <div style={{ fontSize: 15, fontWeight: 700, color: C.blue }}>MIGRATED</div>
+                            <div style={{ fontSize: 11, color: '#4a6a8a', marginTop: 3 }}>→ Raydium pool</div>
                           </>
                         ) : (
                           <>
-                            <div style={{ fontSize: 20, fontWeight: 900, color: C.green, fontVariantNumeric: 'tabular-nums' }}>
+                            <div style={{ fontSize: 24, fontWeight: 900, color: C.green, fontVariantNumeric: 'tabular-nums' }}>
                               {fx(result.bondingCurve.liquidityDepthSol, 2)}
                             </div>
-                            <div style={{ fontSize: 10, color: C.dim }}>SOL real</div>
+                            <div style={{ fontSize: 12, color: C.dim }}>SOL real</div>
                           </>
                         )}
                       </div>
@@ -698,16 +700,16 @@ const App: React.FC = () => {
               </Card>
 
               {/* ── ROW 1: Curve details + Buy sims ─────────────────────────── */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,360px),1fr))', gap: 16 }}>
 
                 {/* Bonding Curve */}
-                <Card idx={1} s={{ padding: 18 }}>
+                <Card idx={1} s={{ padding: 22 }}>
                   <SLabel icon="📈" title="BONDING CURVE" />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <Stat label="TOKEN PRICE"
                       value={graduated
-                        ? <span style={{ fontSize: 11, color: C.blue }}>SEE RAYDIUM</span>
-                        : <span style={{ fontSize: 13 }}>{fx(result.bondingCurve.currentPriceSol, 10)}</span>}
+                        ? <span style={{ fontSize: 13, color: C.blue }}>SEE RAYDIUM</span>
+                        : <span style={{ fontSize: 15 }}>{fx(result.bondingCurve.currentPriceSol, 10)}</span>}
                       sub={graduated ? 'curve is empty' : 'SOL per token'}
                       tip={graduated ? 'Token graduated — check Raydium for live price' : 'Live price from the constant-product AMM'} />
                     <Stat label="EXPLOSION"
@@ -731,12 +733,12 @@ const App: React.FC = () => {
                 </Card>
 
                 {/* Buy Simulations */}
-                <Card idx={2} s={{ padding: 18 }}>
+                <Card idx={2} s={{ padding: 22 }}>
                   <SLabel icon="💰" title="BUY SIMULATIONS" sub={graduated ? 'unavailable' : 'incl. 1% pump.fun fee'} />
                   {graduated ? (
                     <GraduatedSimPlaceholder mint={displayMint} />
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                       {result.simulations.map((sim, i) => {
                         const ic = sim.priceImpact > 5 ? C.red : sim.priceImpact > 2 ? C.amber : C.green;
                         const impactLabel = sim.priceImpact > 5 ? 'HIGH IMPACT' : sim.priceImpact > 2 ? 'MED IMPACT' : 'LOW IMPACT';
@@ -744,32 +746,32 @@ const App: React.FC = () => {
                           <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.15 + i * 0.07 }}
                             style={{ background: C.surface2, border: `1px solid ${C.border2}`,
-                              borderRadius: 10, padding: '12px 14px',
-                              display: 'grid', gridTemplateColumns: '80px 1fr auto', alignItems: 'center', gap: 12 }}>
+                              borderRadius: 12, padding: '14px 16px',
+                              display: 'grid', gridTemplateColumns: '96px 1fr auto', alignItems: 'center', gap: 14 }}>
                             <div>
-                              <div style={{ fontSize: 9, color: C.dim, letterSpacing: '0.15em' }}>SPEND</div>
-                              <div style={{ fontSize: 17, fontWeight: 900, color: C.white }}>{sim.solAmount}</div>
-                              <div style={{ fontSize: 10, color: C.dim }}>SOL</div>
+                              <div style={{ fontSize: 10, color: C.dim, letterSpacing: '0.14em' }}>SPEND</div>
+                              <div style={{ fontSize: 20, fontWeight: 900, color: C.white }}>{sim.solAmount}</div>
+                              <div style={{ fontSize: 12, color: C.dim }}>SOL</div>
                             </div>
                             <div>
-                              <div style={{ fontSize: 9, color: C.dim, letterSpacing: '0.15em' }}>RECEIVE</div>
-                              <div style={{ fontSize: 17, fontWeight: 900, color: C.green, fontVariantNumeric: 'tabular-nums' }}>
+                              <div style={{ fontSize: 10, color: C.dim, letterSpacing: '0.14em' }}>RECEIVE</div>
+                              <div style={{ fontSize: 20, fontWeight: 900, color: C.green, fontVariantNumeric: 'tabular-nums' }}>
                                 {loc(sim.tokensOut)}
                               </div>
-                              <div style={{ fontSize: 10, color: C.dim }}>tokens</div>
+                              <div style={{ fontSize: 12, color: C.dim }}>tokens</div>
                             </div>
                             <div style={{ textAlign: 'right' }}>
-                              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
-                                padding: '3px 7px', borderRadius: 6, color: ic,
+                              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
+                                padding: '4px 8px', borderRadius: 7, color: ic,
                                 background: `${ic}12`, border: `1px solid ${ic}30` }}>
                                 {impactLabel}
                               </span>
-                              <div style={{ fontSize: 10, color: ic, marginTop: 3 }}>+{fx(sim.priceImpact, 2)}%</div>
+                              <div style={{ fontSize: 12, color: ic, marginTop: 5 }}>+{fx(sim.priceImpact, 2)}%</div>
                             </div>
                           </motion.div>
                         );
                       })}
-                      <div style={{ fontSize: 10, color: C.dim, textAlign: 'center', paddingTop: 2 }}>
+                      <div style={{ fontSize: 11, color: C.dim, textAlign: 'center', paddingTop: 4 }}>
                         All amounts after 1% pump.fun fee deducted
                       </div>
                     </div>
@@ -778,33 +780,33 @@ const App: React.FC = () => {
               </div>
 
               {/* ── ROW 2: Velocity + Congestion + Distribution ──────────────── */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 16 }}>
 
                 {/* Velocity */}
-                <Card idx={3} s={{ padding: 18 }}>
+                <Card idx={3} s={{ padding: 22 }}>
                   <SLabel icon="⚡" title="VELOCITY" />
                   <Tip text="Transactions per hour extrapolated from last 30 min window">
                     <div>
-                      <div style={{ fontSize: 'clamp(40px,5vw,56px)', fontWeight: 900, color: C.green,
+                      <div style={{ fontSize: 'clamp(52px,6vw,72px)', fontWeight: 900, color: C.green,
                         lineHeight: 1, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums' }}>
                         <AnimatedNumber value={safeNum(result.velocity.txPerHour)} duration={800} />
                       </div>
-                      <div style={{ fontSize: 9, letterSpacing: '0.22em', color: C.dim, marginTop: 3, marginBottom: 14 }}>TX / HOUR</div>
+                      <div style={{ fontSize: 11, letterSpacing: '0.18em', color: C.dim, marginTop: 5, marginBottom: 18 }}>TX / HOUR</div>
                     </div>
                   </Tip>
-                  <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 9,
-                    padding: '10px 12px', marginBottom: 10 }}>
-                    <div style={{ fontSize: 9, color: C.dim, letterSpacing: '0.15em', marginBottom: 3 }}>LAST 30 MIN</div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: C.white }}>
+                  <div style={{ background: C.surface2, border: `1px solid ${C.border2}`, borderRadius: 11,
+                    padding: '13px 15px', marginBottom: 12 }}>
+                    <div style={{ fontSize: 10, color: C.dim, letterSpacing: '0.14em', marginBottom: 4 }}>LAST 30 MIN</div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: C.white }}>
                       {safeNum(result.velocity.recentTxCount)} txs
                     </div>
                   </div>
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: C.dim, marginBottom: 4 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: C.dim, marginBottom: 6 }}>
                       <span>activity</span>
                       <span>{safeNum(result.velocity.txPerHour) >= 200 ? 'HIGH' : safeNum(result.velocity.txPerHour) >= 50 ? 'MED' : 'LOW'}</span>
                     </div>
-                    <div style={{ height: 3, borderRadius: 999, background: C.surface3, overflow: 'hidden' }}>
+                    <div style={{ height: 5, borderRadius: 999, background: C.surface3, overflow: 'hidden' }}>
                       <motion.div initial={{ width: 0 }}
                         animate={{ width: `${Math.min(safeNum(result.velocity.txPerHour) / 500 * 100, 100)}%` }}
                         transition={{ delay: 0.3, duration: 0.8 }}
@@ -815,7 +817,7 @@ const App: React.FC = () => {
                 </Card>
 
                 {/* Congestion */}
-                <Card idx={4} s={{ padding: 18 }}>
+                <Card idx={4} s={{ padding: 22 }}>
                   <SLabel icon="🌐" title="NETWORK" />
                   {(() => {
                     const cc = getCongCfg(result.congestion.congestionLevel);
@@ -830,26 +832,26 @@ const App: React.FC = () => {
                       <>
                         <motion.div initial={{ scale: 0.88, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                           transition={{ delay: 0.22 }}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: 7, borderRadius: 10,
-                            padding: '9px 14px', marginBottom: 14, fontWeight: 900, fontSize: 12,
-                            letterSpacing: '0.15em', background: cc.bg, border: `1px solid ${cc.border}`, color: cc.color }}>
-                          <span style={{ width: 7, height: 7, borderRadius: '50%', background: cc.color }} />
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, borderRadius: 11,
+                            padding: '11px 16px', marginBottom: 16, fontWeight: 900, fontSize: 13,
+                            letterSpacing: '0.13em', background: cc.bg, border: `1px solid ${cc.border}`, color: cc.color }}>
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', background: cc.color }} />
                           {result.congestion.congestionLevel}
                         </motion.div>
                         <Stat label="MEDIAN PRIORITY FEE"
                           value={result.congestion.avgPriorityFee === 0 ? '0' : loc(result.congestion.avgPriorityFee)}
                           sub="microLamports / CU"
                           tip="Median of non-zero fees from recent pump.fun txs" />
-                        <div style={{ fontSize: 10, color: C.dim, marginTop: 10, lineHeight: 1.5 }}>{feeContext}</div>
+                        <div style={{ fontSize: 12, color: C.dim, marginTop: 12, lineHeight: 1.55 }}>{feeContext}</div>
                       </>
                     );
                   })()}
                 </Card>
 
                 {/* Distribution */}
-                <Card idx={5} s={{ padding: 18 }}>
+                <Card idx={5} s={{ padding: 22 }}>
                   <SLabel icon="👥" title="DISTRIBUTION" sub="top 20 holders (RPC max)" />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <Stat label="SHOWN"
                       value={safeNum(result.holders.totalHolders)}
                       sub="top accounts" tip="getTokenLargestAccounts — max 20 returned by Solana RPC" />
@@ -873,29 +875,29 @@ const App: React.FC = () => {
 
               {/* ── HOLDERS TABLE ────────────────────────────────────────────── */}
               <Card idx={6} s={{ overflow: 'hidden', padding: 0 }}>
-                <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.22em', color: C.muted }}>◆ TOP HOLDERS</span>
-                    <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 5,
+                <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.18em', color: C.muted }}>◆ TOP HOLDERS</span>
+                    <span style={{ fontSize: 11, padding: '4px 9px', borderRadius: 6,
                       background: C.surface3, border: `1px solid ${C.border}`, color: C.dim }}>
                       top {result.holders.topHolders.length} shown
                     </span>
-                    <span style={{ fontSize: 10, color: C.dim }}>· Solana RPC max = 20</span>
+                    <span style={{ fontSize: 11, color: C.dim }}>· Solana RPC max = 20</span>
                   </div>
-                  <span style={{ fontSize: 10, color: C.dim }}>click row → copy address</span>
+                  <span style={{ fontSize: 11, color: C.dim }}>click row → copy address</span>
                 </div>
                 <Divider />
-                <div style={{ overflowX: 'auto', maxHeight: 320, overflowY: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <div style={{ overflowX: 'auto', maxHeight: 420, overflowY: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
                     <thead style={{ position: 'sticky', top: 0, background: C.surface, zIndex: 5 }}>
                       <tr>
                         {['#','ADDRESS','BALANCE','% SUPPLY','RISK'].map((h, i) => (
                           <th key={i} style={{
-                            padding: i === 0 ? '9px 10px 9px 20px' : '9px 14px',
+                            padding: i === 0 ? '12px 12px 12px 24px' : '12px 16px',
                             textAlign: i > 1 ? 'right' : 'left',
-                            fontSize: 9, fontWeight: 400, letterSpacing: '0.2em', color: C.dim,
+                            fontSize: 10, fontWeight: 400, letterSpacing: '0.18em', color: C.dim,
                             borderBottom: `1px solid ${C.border2}`,
-                            ...(i === 4 ? { paddingRight: 20 } : {})
+                            ...(i === 4 ? { paddingRight: 24 } : {})
                           }}>{h}</th>
                         ))}
                       </tr>
@@ -910,22 +912,22 @@ const App: React.FC = () => {
                               background: i % 2 === 0 ? 'transparent' : '#0b0b0b' }}
                             onMouseEnter={e => e.currentTarget.style.background = '#141414'}
                             onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? 'transparent' : '#0b0b0b'}>
-                            <td style={{ padding: '10px 10px 10px 20px', color: C.dim, fontVariantNumeric: 'tabular-nums' }}>{i + 1}</td>
-                            <td style={{ padding: '10px 14px', color: C.green, fontFamily: font }}>
+                            <td style={{ padding: '13px 12px 13px 24px', color: C.dim, fontVariantNumeric: 'tabular-nums' }}>{i + 1}</td>
+                            <td style={{ padding: '13px 16px', color: C.green, fontFamily: font }}>
                               {h.address.slice(0, 8)}…{h.address.slice(-6)}
-                              <span style={{ color: C.dim, marginLeft: 6, fontSize: 10 }}>⧉</span>
+                              <span style={{ color: C.dim, marginLeft: 7, fontSize: 11 }}>⧉</span>
                             </td>
-                            <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
+                            <td style={{ padding: '13px 16px', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
                               {loc(h.balance)}
                             </td>
-                            <td style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 700,
+                            <td style={{ padding: '13px 16px', textAlign: 'right', fontWeight: 700,
                               fontVariantNumeric: 'tabular-nums',
                               color: h.percent > 10 ? C.red : h.percent > 5 ? C.amber : C.green }}>
                               {fx(h.percent, 2)}%
                             </td>
-                            <td style={{ padding: '10px 20px 10px 14px', textAlign: 'right' }}>
-                              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
-                                padding: '2px 7px', borderRadius: 5, color: risk.color,
+                            <td style={{ padding: '13px 24px 13px 16px', textAlign: 'right' }}>
+                              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em',
+                                padding: '4px 8px', borderRadius: 6, color: risk.color,
                                 background: `${risk.color}12`, border: `1px solid ${risk.color}25` }}>
                                 {risk.label}
                               </span>
@@ -933,7 +935,7 @@ const App: React.FC = () => {
                           </motion.tr>
                         );
                       }) : (
-                        <tr><td colSpan={5} style={{ padding: '40px 24px', textAlign: 'center', color: C.dim, fontSize: 12 }}>
+                        <tr><td colSpan={5} style={{ padding: '48px 28px', textAlign: 'center', color: C.dim, fontSize: 14 }}>
                           No holder data
                         </td></tr>
                       )}
@@ -945,7 +947,7 @@ const App: React.FC = () => {
               {/* ── RAW JSON ─────────────────────────────────────────────────── */}
               <div style={{ textAlign: 'center' }}>
                 <button onClick={() => setShowRaw(v => !v)}
-                  style={{ fontFamily: font, fontSize: 11, color: C.dim, background: 'none', border: 'none',
+                  style={{ fontFamily: font, fontSize: 12, color: C.dim, background: 'none', border: 'none',
                     cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}>
                   {showRaw ? '▲ hide raw json' : '▼ show raw json'}
                 </button>
@@ -955,7 +957,7 @@ const App: React.FC = () => {
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }} style={{ overflow: 'hidden' }}>
                     <pre style={{ background: C.surface2, border: `1px solid ${C.border}`, borderRadius: 12,
-                      padding: 16, overflowX: 'auto', maxHeight: 340, fontSize: 10, lineHeight: 1.6, color: C.dim }}>
+                      padding: 18, overflowX: 'auto', maxHeight: 420, fontSize: 12, lineHeight: 1.6, color: C.dim }}>
                       {JSON.stringify(result, null, 2)}
                     </pre>
                   </motion.div>
@@ -967,9 +969,9 @@ const App: React.FC = () => {
       </main>
 
       {/* ── FOOTER ─────────────────────────────────────────────────────────── */}
-      <footer style={{ borderTop: `1px solid ${C.border2}`, padding: '16px 20px' }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto', display: 'flex', flexWrap: 'wrap',
-          alignItems: 'center', justifyContent: 'space-between', gap: 10, fontSize: 11, color: C.dim }}>
+      <footer style={{ borderTop: `1px solid ${C.border2}`, padding: '20px 0' }}>
+        <div style={{ ...wrap, display: 'flex', flexWrap: 'wrap',
+          alignItems: 'center', justifyContent: 'space-between', gap: 12, fontSize: 12, color: C.dim }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span>Powered by</span>
             <span style={{ fontWeight: 700, color: C.muted }}>QuickNode</span>
